@@ -25,9 +25,7 @@ PAGE="""\
 <html>
 <head>
 <title>SENSE</title>
-<link rel = "stylesheet"
-   type = "text/css"
-   href = "sense.css" />
+<link rel="stylesheet" type="text/css" href="sense.css" />
 <script type="text/javascript">
 function updateValue(){
 var rawFile = new XMLHttpRequest();
