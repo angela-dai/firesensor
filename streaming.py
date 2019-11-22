@@ -56,7 +56,7 @@ setTimeout('updateValue()',3000);
 <body onLoad="updateValue()">
 <div class="row">
 <div class="column">
-<img src="img/sense.png" width="141" height="48" />
+<img src="https://i.imgur.com/M9c1T8H.png" width="141" height="48" />
 </div>
 <div class="column">
 <h1>ONE MILE LAKE</h1>
