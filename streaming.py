@@ -40,6 +40,10 @@ rawFile = new XMLHttpRequest();
 rawFile.open("GET", "/fireDetected.html", false);
 rawFile.send(null);
 document.getElementById("fireDetected").innerHTML = rawFile.responseText;
+rawFile = new XMLHttpRequest();
+rawFile.open("GET", "/fireRisk.html", false);
+rawFile.send(null);
+document.getElementById("fireRisk").innerHTML = rawFile.responseText;
 setTimeout('updateValue()',100);
 }
 </script>
@@ -125,6 +129,41 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             if humidity is not None:
                 humidity = str(humidity)+"%"
                 content = humidity.encode('utf-8')
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.send_header('Content-Length', len(content))
+                self.end_headers()
+                self.wfile.write(content)
+        elif self.path == '/fireRisk.html':
+            if humidity is not None and temperature is not None:
+                risk = ""
+                tempRisk = ""
+                humidityRisk = ""
+                if temperature > 35:
+                    tempRisk = "EXTREME"
+                elif temperature > 30:
+                    tempRisk = "HIGH":
+                elif temperature > 25:
+                    tempRisk = "MODERATE"
+                else:
+                    tempRisk = "LOW"
+                if humidity < 15: 
+                    humidityRisk = "EXTREME"
+                elif humidity < 25:
+                    humidityRisk = "HIGH"
+                elif humidity < 35:
+                    humidityRisk = "MODERATE"
+                else:
+                    humidityRisk = "LOW"
+                if tempRisk == "EXTREME" and humidity == "EXTREME":
+                    risk = "EXTREME"
+                elif tempRisk == "EXTREME" or humidityRisk == "EXTREME":
+                    risk = "HIGH"
+                elif temperature == "MODERATE" or humidityRisk == "MODERATE":
+                    risk = "MODERATE"
+                else:
+                    risk = "LOW"
+                content = risk.encode('utf-8')
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html')
                 self.send_header('Content-Length', len(content))
