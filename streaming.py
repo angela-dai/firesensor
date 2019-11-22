@@ -135,7 +135,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             interpreter = Interpreter("model/model_unquant.tflite")
             interpreter.allocate_tensors()
             _, height, width, _ = interpreter.get_input_details()[0]['shape']
-            image = Image.open(output.buffer).convert('RGB').resize((width, height),
+            image = Image.open(output.buffer).save("picture", "jpeg")
+            image = Image.open("picture.jpeg").convert('RGB').resize((width, height),
                                                          Image.ANTIALIAS)
             results = classify_image(interpreter, image)
             label_id, prob = results[0]
