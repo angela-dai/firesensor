@@ -142,7 +142,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 if temperature > 35:
                     tempRisk = "EXTREME"
                 elif temperature > 30:
-                    tempRisk = "HIGH":
+                    tempRisk = "HIGH"
                 elif temperature > 25:
                     tempRisk = "MODERATE"
                 else:
