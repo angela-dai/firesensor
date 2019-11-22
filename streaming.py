@@ -44,7 +44,7 @@ var rawFile = new XMLHttpRequest();
 rawFile.open("GET", "/fireDetected.html", false);
 rawFile.send(null);
 document.getElementById("fireDetected").innerHTML = rawFile.responseText;
-setTimeout('updateValue()',5000);
+setTimeout('updateValue()',3000);
 }
 </script>
 </head>
