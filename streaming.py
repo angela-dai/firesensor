@@ -16,7 +16,7 @@ from http import server
 from PIL import Image
 from tflite_runtime.interpreter import Interpreter
 
-image = ""
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 22 #GPIO 22
@@ -135,8 +135,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             interpreter = Interpreter("model/model_unquant.tflite")
             interpreter.allocate_tensors()
             _, height, width, _ = interpreter.get_input_details()[0]['shape']
-            image = Image.open(output.buffer).save("picture", "JPEG")
-            image = Image.open("picture.jpg").convert('RGB').resize((width, height),
+            # image = Image.open(output.buffer).save("picture", "JPEG")
+            image = Image.open(output.buffer).convert('RGB').resize((width, height),
                                                          Image.ANTIALIAS)
             results = classify_image(interpreter, image)
             label_id, prob = results[0]
