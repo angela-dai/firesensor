@@ -25,6 +25,9 @@ PAGE="""\
 <html>
 <head>
 <title>SENSE</title>
+<link rel = "stylesheet"
+   type = "text/css"
+   href = "sense.css" />
 <script type="text/javascript">
 function updateValue(){
 var rawFile = new XMLHttpRequest();
@@ -49,9 +52,21 @@ setTimeout('updateValue()',3000);
 </script>
 </head>
 <body onLoad="updateValue()">
+<div class="row">
+<div class="column">
+<img src="sense.png" width="141" height="48" />
+</div>
+<div class="column">
+<h1>ONE MILE LAKE</h1>
+</div>
+</div>
+<div class="row">
+<div class="column">
 <h1>ONE MILE LAKE</h1>
 <h2>Live View</h2>
 <img src="stream.mjpg" width="640" height="480" />
+</div>
+<div class="column">
 <h2>Current Details</h2>
 <h3>Fire Risk:</h3>
 <p id="fireRisk">LOW/MODERATE/HIGH/EXTREME</p>
@@ -61,6 +76,8 @@ setTimeout('updateValue()',3000);
 <p id="temperature">##</p>
 <h3>Humidity:</h3>
 <p id="humidity">##</p>
+</div>
+</div>
 </body>
 </html>
 """
