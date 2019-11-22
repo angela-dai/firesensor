@@ -13,7 +13,7 @@ import time
 
 from threading import Condition
 from http import server
-from PIL import Image
+from PIL import Image, ImageFile
 from tflite_runtime.interpreter import Interpreter
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
