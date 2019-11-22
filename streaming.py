@@ -13,21 +13,11 @@ DHT_PIN = 22 #GPIO 22
 PAGE="""\
 <html>
 <head>
-<title>SENSE</title>
+<title>picamera MJPEG streaming demo</title>
 </head>
 <body>
-<h1>ONE MILE LAKE</h1>
-<h2>Live View</h2>
+<h1>PiCamera MJPEG Streaming Demo</h1>
 <img src="stream.mjpg" width="640" height="480" />
-<h2>Current Details</h2>
-<h3>Fire Risk:</h3>
-<p id="fireRisk">LOW/MODERATE/HIGH/EXTREME</p>
-<h3>Fire Detected:</h3>
-<p id="fireDetected">YES/NO</p>
-<h3>Temperature:</h3>
-<p id="temperature">##</p>
-<h3>Humidity:</h3>
-<p id="humidity">##</p>
 </body>
 </html>
 """
