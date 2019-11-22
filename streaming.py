@@ -121,10 +121,9 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
     camera.start_recording(output, format='mjpeg')
     try:
         address = ('', 8000)
-            server = StreamingServer(address, StreamingHandler)
-            server.serve_forever()
-        while True:
-            
+        server = StreamingServer(address, StreamingHandler)
+        server.serve_forever()
+        #while True:
             # humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
             # if humidity is not None and temperature is not None:
             #     humidity = str(humidity) + "%"
