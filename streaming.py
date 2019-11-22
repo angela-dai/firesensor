@@ -25,7 +25,11 @@ PAGE="""\
 <html>
 <head>
 <title>SENSE</title>
-<link rel="stylesheet" type="text/css" href="sense.css" />
+<style>
+body {background-color: powderblue;}
+.row {display: flex;}
+.column {flex: 50%;}
+</style>
 <script type="text/javascript">
 function updateValue(){
 var rawFile = new XMLHttpRequest();
