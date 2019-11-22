@@ -135,7 +135,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         elif self.path == '/fireDetected.html':
             if image != "":
                 labels = load_labels("model/labels.txt")
-                interpreter = Interpreter("model/model.tflite")
+                interpreter = Interpreter("model/model_unquant.tflite")
                 interpreter.allocate_tensors()
                 _, height, width, _ = interpreter.get_input_details()[0]['shape']
                 results = output.classify_image(interpreter)
