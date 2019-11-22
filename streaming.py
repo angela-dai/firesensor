@@ -26,7 +26,7 @@ PAGE="""\
 <head>
 <title>SENSE</title>
 <style>
-body {background-color: powderblue;}
+body { background: white; font-family: Arial, Helvetica, sans-serif;}
 .row {display: flex;}
 .column {flex: 50%;}
 </style>
@@ -56,7 +56,7 @@ setTimeout('updateValue()',3000);
 <body onLoad="updateValue()">
 <div class="row">
 <div class="column">
-<img src="sense.png" width="141" height="48" />
+<img src="img/sense.png" width="141" height="48" />
 </div>
 <div class="column">
 <h1>ONE MILE LAKE</h1>
