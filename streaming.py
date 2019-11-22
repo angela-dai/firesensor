@@ -18,13 +18,9 @@ PAGE="""\
 function updateValue(){
 var rawFile = new XMLHttpRequest();
 rawFile = new XMLHttpRequest();
-rawFile.open("GET", "temperature.txt", false);
+rawFile.open("GET", "/temperature.html", false);
 rawFile.send(null);
 document.getElementById("temperature").innerHTML = rawFile.responseText;
-rawFile = new XMLHttpRequest();
-rawFile.open("GET", "humidity.txt", false);
-rawFile.send(null);
-document.getElementById("humidity").innerHTML = rawFile.responseText;
 setTimeout('updateValue()',1000);
 }
 </script>
@@ -70,6 +66,16 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_response(301)
             self.send_header('Location', '/index.html')
             self.end_headers()
+        elif self.path == '/temperature.html':
+            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
+            if humidity is not None and temperature is not None:
+                temperature = str(temperature)
+                content = temperature.encode('utf-8')
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.send_header('Content-Length', len(content))
+                self.end_headers()
+                self.wfile.write(content)
         elif self.path == '/index.html':
             content = PAGE.encode('utf-8')
             self.send_response(200)
@@ -114,25 +120,6 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
         address = ('', 8000)
         server = StreamingServer(address, StreamingHandler)
         server.serve_forever()
-        while True:
-            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
-            if humidity is not None and temperature is not None:
-                humidity = str(humidity) + "%"
-                f = open('humidity.txt','w')
-                f.write(humidity)
-                f.close()
-                temperature = str(temperature) + "C"
-                f = open('temperature.txt','w')
-                f.write(temperature)
-                f.close()
-            else:
-                f = open('humidity.txt','w')
-                f.write("ERROR")
-                f.close()
-                f = open('temperature.txt','w')
-                f.write("ERROR")
-                f.close()
-            sleep(1)
     finally:
         camera.stop_recording()
 
