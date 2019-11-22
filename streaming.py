@@ -72,6 +72,22 @@ def set_input_tensor(interpreter, image):
   input_tensor[:, :] = image
 
 
+def classify_image(interpreter, image, top_k=1):
+  """Returns a sorted array of classification results."""
+  set_input_tensor(interpreter, image)
+  interpreter.invoke()
+  output_details = interpreter.get_output_details()[0]
+  output = np.squeeze(interpreter.get_tensor(output_details['index']))
+
+  # If the model is quantized (uint8 data), then dequantize the results
+  if output_details['dtype'] == np.uint8:
+    scale, zero_point = output_details['quantization']
+    output = scale * (output - zero_point)
+
+  ordered = np.argpartition(-output, top_k)
+  return [(i, output[i]) for i in ordered[:top_k]]
+
+
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
@@ -89,27 +105,9 @@ class StreamingOutput(object):
             self.buffer.seek(0)
         return self.buffer.write(buf)
 
-    def classify_image(interpreter, top_k=1):
-        """Returns a sorted array of classification results."""
-        image = Image.open(stream).convert('RGB').resize((width, height),
-                                                         Image.ANTIALIAS)
-        set_input_tensor(interpreter, image)
-        interpreter.invoke()
-        output_details = interpreter.get_output_details()[0]
-        output = np.squeeze(interpreter.get_tensor(output_details['index']))
-
-        # If the model is quantized (uint8 data), then dequantize the results
-        if output_details['dtype'] == np.uint8:
-            scale, zero_point = output_details['quantization']
-            output = scale * (output - zero_point)
-
-        ordered = np.argpartition(-output, top_k)
-        return [(i, output[i]) for i in ordered[:top_k]]
-
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
-        output = StreamingOutput()
         if self.path == '/':
             self.send_response(301)
             self.send_header('Location', '/index.html')
@@ -133,20 +131,21 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(content)
         elif self.path == '/fireDetected.html':
-            if image != "":
-                labels = load_labels("model/labels.txt")
-                interpreter = Interpreter("model/model_unquant.tflite")
-                interpreter.allocate_tensors()
-                _, height, width, _ = interpreter.get_input_details()[0]['shape']
-                results = output.classify_image(interpreter)
-                label_id, prob = results[0]
-                result = str(labels[label_id])+str(prob)
-                content = result.encode('utf-8')
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/html')
-                self.send_header('Content-Length', len(content))
-                self.end_headers()
-                self.wfile.write(content)
+            labels = load_labels("model/labels.txt")
+            interpreter = Interpreter("model/model_unquant.tflite")
+            interpreter.allocate_tensors()
+            _, height, width, _ = interpreter.get_input_details()[0]['shape']
+            image = Image.open(output.buffer).convert('RGB').resize((width, height),
+                                                         Image.ANTIALIAS)
+            results = classify_image(interpreter, image)
+            label_id, prob = results[0]
+            result = str(labels[label_id])+str(prob)
+            content = result.encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
         elif self.path == '/index.html':
             content = PAGE.encode('utf-8')
             self.send_response(200)
