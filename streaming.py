@@ -21,7 +21,11 @@ rawFile = new XMLHttpRequest();
 rawFile.open("GET", "/temperature.html", false);
 rawFile.send(null);
 document.getElementById("temperature").innerHTML = rawFile.responseText;
-setTimeout('updateValue()',1000);
+rawFile = new XMLHttpRequest();
+rawFile.open("GET", "/humidity.html", false);
+rawFile.send(null);
+document.getElementById("humidity").innerHTML = rawFile.responseText;
+setTimeout('updateValue()',100);
 }
 </script>
 </head>
@@ -71,6 +75,16 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             if humidity is not None and temperature is not None:
                 temperature = str(temperature)
                 content = temperature.encode('utf-8')
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.send_header('Content-Length', len(content))
+                self.end_headers()
+                self.wfile.write(content)
+        elif self.path == '/humidity.html':
+            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
+            if humidity is not None and temperature is not None:
+                humidity = str(humidity)
+                content = humidity.encode('utf-8')
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html')
                 self.send_header('Content-Length', len(content))
