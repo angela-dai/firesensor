@@ -17,14 +17,7 @@ PAGE="""\
 <script type="text/javascript">
 			function updateValue(){
 				var rawFile = new XMLHttpRequest();
-				rawFile.open("GET", "fireRisk.txt", false);
-				rawFile.send(null);
-				document.getElementById("fireRisk").innerHTML = rawFile.responseText;
-                rawFile = new XMLHttpRequest();
-				rawFile.open("GET", "fireDetected.txt", false);
-				rawFile.send(null);
-				document.getElementById("fireDetected").innerHTML = rawFile.responseText;
-                rawFile = new XMLHttpRequest();
+				rawFile = new XMLHttpRequest();
 				rawFile.open("GET", "temperature.txt", false);
 				rawFile.send(null);
 				document.getElementById("temperature").innerHTML = rawFile.responseText;
@@ -114,8 +107,6 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-
-
 with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
@@ -123,25 +114,25 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
         address = ('', 8000)
         server = StreamingServer(address, StreamingHandler)
         server.serve_forever()
-        #while True:
-            # humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
-            # if humidity is not None and temperature is not None:
-            #     humidity = str(humidity) + "%"
-            #     f = open('humidity.txt','w')
-            #     f.write(humidity)
-            #     f.close()
-            #     temperature = str(temperature) + "C"
-            #     f = open('temperature.txt','w')
-            #     f.write(temperature)
-            #     f.close()
-            # else:
-            #     f = open('humidity.txt','w')
-            #     f.write("ERROR")
-            #     f.close()
-            #     f = open('temperature.txt','w')
-            #     f.write("ERROR")
-            #     f.close()
-            # sleep(1)
+        while True:
+            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
+            if humidity is not None and temperature is not None:
+                humidity = str(humidity) + "%"
+                f = open('humidity.txt','w')
+                f.write(humidity)
+                f.close()
+                temperature = str(temperature) + "C"
+                f = open('temperature.txt','w')
+                f.write(temperature)
+                f.close()
+            else:
+                f = open('humidity.txt','w')
+                f.write("ERROR")
+                f.close()
+                f = open('temperature.txt','w')
+                f.write("ERROR")
+                f.close()
+            sleep(1)
     finally:
         camera.stop_recording()
 
