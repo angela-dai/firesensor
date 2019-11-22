@@ -124,24 +124,24 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
             address = ('', 8000)
             server = StreamingServer(address, StreamingHandler)
             server.serve_forever()
-            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
-            if humidity is not None and temperature is not None:
-                humidity = str(humidity) + "%"
-                f = open('humidity.txt','w')
-                f.write(humidity)
-                f.close()
-                temperature = str(temperature) + "C"
-                f = open('temperature.txt','w')
-                f.write(temperature)
-                f.close()
-            else:
-                f = open('humidity.txt','w')
-                f.write("ERROR")
-                f.close()
-                f = open('temperature.txt','w')
-                f.write("ERROR")
-                f.close()
-            sleep(1)
+            # humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
+            # if humidity is not None and temperature is not None:
+            #     humidity = str(humidity) + "%"
+            #     f = open('humidity.txt','w')
+            #     f.write(humidity)
+            #     f.close()
+            #     temperature = str(temperature) + "C"
+            #     f = open('temperature.txt','w')
+            #     f.write(temperature)
+            #     f.close()
+            # else:
+            #     f = open('humidity.txt','w')
+            #     f.write("ERROR")
+            #     f.close()
+            #     f = open('temperature.txt','w')
+            #     f.write("ERROR")
+            #     f.close()
+            # sleep(1)
 
     except KeyboardInterrupt:
         camera.stop_recording()
