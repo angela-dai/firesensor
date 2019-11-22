@@ -25,8 +25,14 @@ PAGE="""\
 <html>
 <head>
 <title>SENSE</title>
-<script type="text/javascript">
+<script type = "text/javascript">
 function updateValue(){
+updateFrequentValue();
+updateML();
+}
+</script>
+<script type="text/javascript">
+function updateFrequentValue(){
 var rawFile = new XMLHttpRequest();
 rawFile = new XMLHttpRequest();
 rawFile.open("GET", "/temperature.html", false);
@@ -37,14 +43,19 @@ rawFile.open("GET", "/humidity.html", false);
 rawFile.send(null);
 document.getElementById("humidity").innerHTML = rawFile.responseText;
 rawFile = new XMLHttpRequest();
-rawFile.open("GET", "/fireDetected.html", false);
-rawFile.send(null);
-document.getElementById("fireDetected").innerHTML = rawFile.responseText;
-rawFile = new XMLHttpRequest();
 rawFile.open("GET", "/fireRisk.html", false);
 rawFile.send(null);
 document.getElementById("fireRisk").innerHTML = rawFile.responseText;
-setTimeout('updateValue()',100);
+setTimeout('updateFrequentValue()',100);
+}
+</script>
+<script type="text/javascript">
+function updateML(){
+var rawFile = new XMLHttpRequest();
+rawFile.open("GET", "/fireDetected.html", false);
+rawFile.send(null);
+document.getElementById("fireDetected").innerHTML = rawFile.responseText;
+setTimeout('updateML()',1000);
 }
 </script>
 </head>
