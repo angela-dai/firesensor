@@ -62,7 +62,6 @@ setTimeout('updateValue()',3000);
 </div>
 <div class="row">
 <div class="column">
-<h1>ONE MILE LAKE</h1>
 <h2>Live View</h2>
 <img src="stream.mjpg" width="640" height="480" />
 </div>
