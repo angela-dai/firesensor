@@ -1,11 +1,22 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import Adafruit_DHT
+import argparse
 import io
 import picamera
 import logging
+import numpy as np
 import socketserver
+import time
+
 from threading import Condition
 from http import server
-from time import sleep
+from PIL import Image
+from tflite_runtime.interpreter import Interpreter
+
+image = ""
 
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 22 #GPIO 22
@@ -25,6 +36,10 @@ rawFile = new XMLHttpRequest();
 rawFile.open("GET", "/humidity.html", false);
 rawFile.send(null);
 document.getElementById("humidity").innerHTML = rawFile.responseText;
+rawFile = new XMLHttpRequest();
+rawFile.open("GET", "/fireDetected.html", false);
+rawFile.send(null);
+document.getElementById("fireDetected").innerHTML = rawFile.responseText;
 setTimeout('updateValue()',100);
 }
 </script>
@@ -46,6 +61,16 @@ setTimeout('updateValue()',100);
 </html>
 """
 
+def load_labels(path):
+  with open(path, 'r') as f:
+    return {i: line.strip() for i, line in enumerate(f.readlines())}
+
+
+def set_input_tensor(interpreter, image):
+  tensor_index = interpreter.get_input_details()[0]['index']
+  input_tensor = interpreter.tensor(tensor_index)()[0]
+  input_tensor[:, :] = image
+
 
 class StreamingOutput(object):
     def __init__(self):
@@ -64,16 +89,34 @@ class StreamingOutput(object):
             self.buffer.seek(0)
         return self.buffer.write(buf)
 
+    def classify_image(interpreter, top_k=1):
+        """Returns a sorted array of classification results."""
+        image = Image.open(stream).convert('RGB').resize((width, height),
+                                                         Image.ANTIALIAS)
+        set_input_tensor(interpreter, image)
+        interpreter.invoke()
+        output_details = interpreter.get_output_details()[0]
+        output = np.squeeze(interpreter.get_tensor(output_details['index']))
+
+        # If the model is quantized (uint8 data), then dequantize the results
+        if output_details['dtype'] == np.uint8:
+            scale, zero_point = output_details['quantization']
+            output = scale * (output - zero_point)
+
+        ordered = np.argpartition(-output, top_k)
+        return [(i, output[i]) for i in ordered[:top_k]]
+
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
+        humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
+        output = StreamingOutput()
         if self.path == '/':
             self.send_response(301)
             self.send_header('Location', '/index.html')
             self.end_headers()
         elif self.path == '/temperature.html':
-            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
-            if humidity is not None and temperature is not None:
-                temperature = str(temperature)
+            if temperature is not None:
+                temperature = str(temperature)+"°C"
                 content = temperature.encode('utf-8')
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html')
@@ -81,10 +124,24 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(content)
         elif self.path == '/humidity.html':
-            humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)    
-            if humidity is not None and temperature is not None:
-                humidity = str(humidity)
+            if humidity is not None:
+                humidity = str(humidity)+"%"
                 content = humidity.encode('utf-8')
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.send_header('Content-Length', len(content))
+                self.end_headers()
+                self.wfile.write(content)
+        elif self.path == '/fireDetected.html':
+            if image != "":
+                labels = load_labels("model/labels.txt")
+                interpreter = Interpreter("model/model.tflite")
+                interpreter.allocate_tensors()
+                _, height, width, _ = interpreter.get_input_details()[0]['shape']
+                results = output.classify_image(interpreter)
+                label_id, prob = results[0]
+                result = str(labels[label_id])+str(prob)
+                content = result.encode('utf-8')
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html')
                 self.send_header('Content-Length', len(content))
