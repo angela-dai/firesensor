@@ -5,11 +5,11 @@ Business Prize at SAP iXp Hackathon
 For SAP Fall iXp Hackathon, Alice Kim, Irene Chung, Jessica Jiang, and I created Sense, a Website and **React Native** app which monitors local forest fires in BC and provides this data. Sense uses machine learning and sensors to detect fires and sends data over to the website and app. 
 
 ## Media:
-- [Presentation: Pitch Deck, Business Analysis](https://docs.google.com/presentation/d/1QtsD5s7ii8GmpRFka4z8ZW1KPZ1NRmnLYIbnus8x9h4/edit?usp=sharing)
+- [Presentation: Pitch Deck, Business Analysis](https://github.com/angeladai1/firesensor/blob/master/Sense.pdf)
 
-- [Video: Live Website Demo](https://photos.app.goo.gl/pu5wde2txNzrNWRE8)
+- [Video: Live Website Demo](https://github.com/angeladai1/firesensor/blob/master/dashboard.mov)
 
-- [Video: React Native App Demo](https://photos.app.goo.gl/FEydWZsnkeuou6tNA)
+- [Video: React Native App Demo](https://github.com/angeladai1/firesensor/blob/master/app.mov)
 
 ## Techonolgies Used
 Programming Languages:
