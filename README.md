@@ -11,7 +11,7 @@ For SAP Fall iXp Hackathon, Alice Kim, Irene Chung, Jessica Jiang, and I created
 
 - [Video: React Native App Demo](https://github.com/angeladai1/firesensor/blob/master/app.mov)
 
-## Techonolgies Used
+## Technologies Used
 Programming Languages:
 - React Native
 - Python
